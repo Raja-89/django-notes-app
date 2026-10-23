@@ -136,9 +136,3 @@ Avoid `docker compose down -v` unless you intentionally want to remove the assoc
 - Persisting MySQL data with named volumes.
 - Using health checks, logs, and container inspection to troubleshoot deployment issues.
 
-## Acknowledgment
-
-Original application: [LondheShubham153/django-notes-app](https://github.com/LondheShubham153/django-notes-app)
-
-Tutorial followed: [YouTube deployment tutorial](https://youtu.be/9bSbNNH4Nqw)
-# django-notes-app
