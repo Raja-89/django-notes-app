@@ -1,0 +1,25 @@
+name: Django Notes App CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Django image
+        run: docker build -t django-notes-app-django:ci .
+
+      - name: Build Nginx image
+        run: docker build -t django-notes-app-nginx:ci ./nginx
