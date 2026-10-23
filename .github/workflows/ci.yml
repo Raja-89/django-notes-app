@@ -1,3 +1,4 @@
+
 name: Django Notes App CI
 
 on:
@@ -11,12 +12,29 @@ permissions:
 
 jobs:
   docker-build:
-    name: Build and Check Docker Images
+    name: Build, Check and Test
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_HOST: "%"
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+          --health-start-period=30s
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Validate Docker Compose configuration
         run: |
           touch .env
@@ -29,4 +47,25 @@ jobs:
         run: docker build -t django-notes-app-nginx:ci ./nginx
 
       - name: Run Django system check
-        run: docker run --rm django-notes-app-django:ci python manage.py check
+        run: |
+          docker run --rm \
+            -e DB_NAME=test_db \
+            -e DB_USER=root \
+            -e DB_PASSWORD=root \
+            -e DB_HOST=127.0.0.1 \
+            -e DB_PORT=3306 \
+            --network host \
+            django-notes-app-django:ci \
+            python manage.py check
+
+      - name: Run Django API tests
+        run: |
+          docker run --rm \
+            -e DB_NAME=test_db \
+            -e DB_USER=root \
+            -e DB_PASSWORD=root \
+            -e DB_HOST=127.0.0.1 \
+            -e DB_PORT=3306 \
+            --network host \
+            django-notes-app-django:ci \
+            python manage.py test api.tests -v 2
