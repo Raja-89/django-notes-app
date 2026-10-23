@@ -17,6 +17,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Validate Docker Compose configuration
+        run: |
+          touch .env
+          docker compose config --quiet
 
       - name: Build Django image
         run: docker build -t django-notes-app-django:ci .
