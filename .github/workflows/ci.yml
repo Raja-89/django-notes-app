@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   docker-build:
-    name: Build Docker Images
+    name: Build and Check Docker Images
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +23,6 @@ jobs:
 
       - name: Build Nginx image
         run: docker build -t django-notes-app-nginx:ci ./nginx
+
+      - name: Run Django system check
+        run: docker run --rm django-notes-app-django:ci python manage.py check
